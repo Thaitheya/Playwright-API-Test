@@ -65,3 +65,42 @@ test('Delete Article', async ({ page, request }) => {
   await page.waitForResponse('https://conduit-api.bondaracademy.com/api/articles?limit=10&offset=0')
   await expect(page.locator('.preview-link h1').first()).not.toContainText('Test title')
 })
+
+
+test('Create Article', async ({request, page})=> {
+  await page.goto('https://conduit.bondaracademy.com/');
+  await page.getByText('Sign in').click()
+  await page.getByRole('textbox', {name:"Email"}).fill('thaitheyasudanpk1@gmail.com')
+  await page.getByRole('textbox', {name:"Password"}).fill('Sudan@2805')
+  await page.getByRole('button', {name:"Sign in"}).click()
+  await page.getByText('New Article').click()
+  await page.getByRole('textbox', {name: 'Article Title'}).fill('Playwright is awesome')
+  await page.getByRole('textbox', {name: "What\'s this article about?"}).fill('We can use APIs in Playwright')
+  await page.getByRole('textbox', {name: "Write your article (in markdown)"}).fill('Automate any web application in Playwright')
+  await page.getByRole('button', {name:'Publish Article'}).click()
+  const createArticleResponse = await page.waitForResponse('https://conduit-api.bondaracademy.com/api/articles/')
+  const articleResponseJson = await createArticleResponse.json()
+  const slugID = articleResponseJson.article.slug
+  const loginResponse = await request.post('https://conduit-api.bondaracademy.com/api/users/login', {
+      data: {
+        "user": {
+          "email": "thaitheyasudanpk1@gmail.com",
+          "password": "Sudan@2805"
+        }
+      }
+    })
+  expect((loginResponse).status()).toEqual(200)
+  const responseLoginJson = await loginResponse.json()
+  const token = responseLoginJson.user.token
+
+  const deleteResponse = await request.delete(`https://conduit-api.bondaracademy.com/api/articles/${slugID}`, {
+    headers: {
+      Authorization: `Token ${token}`
+    } 
+  })
+  expect(deleteResponse.status()).toEqual(204)
+  await page.getByText('Home').first().click()
+  await expect(page.locator('.article-preview h1').first()).not.toContainText('Playwright is awesome')
+
+
+})
