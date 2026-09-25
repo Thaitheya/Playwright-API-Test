@@ -55,10 +55,6 @@ test('Delete Article', async ({ page, request }) => {
   expect((newArticleResponse).status()).toEqual(201)
 
   await page.goto('https://conduit.bondaracademy.com/');
-  await page.getByText('Sign in').click()
-  await page.getByRole('textbox', {name:"Email"}).fill('thaitheyasudanpk1@gmail.com')
-  await page.getByRole('textbox', {name:"Password"}).fill('Sudan@2805')
-  await page.getByRole('button', {name:"Sign in"}).click()
   await expect(page.locator('.preview-link h1').first()).toContainText('Test title')
   await page.getByText('Test title').click()
   await page.getByRole('button', {name:'Delete Article'}).first().click()
@@ -68,13 +64,9 @@ test('Delete Article', async ({ page, request }) => {
 
 
 test('Create Article', async ({request, page})=> {
-  await page.goto('https://conduit.bondaracademy.com/');
-  await page.getByText('Sign in').click()
-  await page.getByRole('textbox', {name:"Email"}).fill('thaitheyasudanpk1@gmail.com')
-  await page.getByRole('textbox', {name:"Password"}).fill('Sudan@2805')
-  await page.getByRole('button', {name:"Sign in"}).click()
+  await page.goto('https://conduit.bondaracademy.com/')
   await page.getByText('New Article').click()
-  await page.getByRole('textbox', {name: 'Article Title'}).fill('Playwright is awesome')
+  await page.getByRole('textbox', {name: 'Article Title'}).fill('Test title')
   await page.getByRole('textbox', {name: "What\'s this article about?"}).fill('We can use APIs in Playwright')
   await page.getByRole('textbox', {name: "Write your article (in markdown)"}).fill('Automate any web application in Playwright')
   await page.getByRole('button', {name:'Publish Article'}).click()
